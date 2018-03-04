@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style type="text/css">
+			body{ 
+				margin: 0px;
+			}
+			#map{
+				width:800px;
+				height:600px;
+			}
+			#operate{
+				
+			}
+			#code{
+				position: absolute;
+				left: 800px;
+				top:0px;
+				color:blue;
+				font-size:20px;
+				border: 1px solid black;
+				padding: 10px;
+			}
+			#results{
+				position: absolute;
+				left: 1280px;
+				top:0px;
+				
+			}
+			table{
+				border-collapse: collapse;
+				text-align: center;
+			}
+			td,th{
+				border: 1PX solid black; 	
+			}
+			#content{
+				padding-left: 40px;
+			}
+		</style>
+	</head>
+	
+	<body>
+		
+		<!-- 存放地图div -->
+		<div id="map"></div>
+		
+		<!-- 操作按钮 -->
+		<div id="operate">
+			<input type="button" value="1.初始化地图" onclick="createMap()">
+			<input type="button" value="2.启用滚轮放缩" onclick="changeSize()">
+			<input type="button" value="3.平移缩放控件" onclick="navCtrl()">
+			<input type="button" value="4.全景图" onclick="panoramaControl()">
+			<input type="button" value="5.创建标注" onclick="marker()">
+			<input type="button" value="6.创建折线" onclick="polyline()"><br>
+			<input type="button" value="7.交通流量图层" onclick="traffic()">
+			<input type="button" value="8.周边搜索" onclick="localSearch()">
+			<input type="button" value="9.公交导航" onclick="transitRoute()">
+			<input type="button" value="10.驾车导航" onclick="drivingRoute()"><br>
+			<input type="button" value="11.添加班车线路坐标" onclick="addBusSite()">
+			<input type="button" value="12.查看班车1号线" onclick="queryBusLine()">
+		</div>
+		
+		<!-- 代码展示 -->
+		<div id="code"></div>
+		<!-- 查询结果 -->
+		<div id="results"></div>
+			
+	</body>
+	<!-- 引入jquery -->
+	<script type="text/javascript" src="resources/js/jquery-1.11.1.js"></script>
+	<!--引入百度地图api-->
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ei82lVYYhaWUebtRyzXulGTCHq9hGfzL"></script>
+	<script>
+	var mp =null;
+	var point=null;
+	
+	createMap();
+	
+	//1、初始化地图
+	function createMap(){
+		$("#results").html("");//清空查询结果
+		
+		//创建地图实例
+	    mp = new BMap.Map('map');
+	    //创建点,坐标百度经纬度
+	    point=new BMap.Point(117.27, 31.86);
+	    //初始化地图，设置中心点和放大级别，3-19级
+	    mp.centerAndZoom(point, 11);
+	    //mp.centerAndZoom('合肥市');
+	    
+	    $("#code").html(
+	    		"全局变量：<br>"
+	    		+"var mp =null;//地图<br>"
+				+"var point=null;//中心点<br><br>"
+				+"初始化地图方法源码：<br>"
+				+"function createMap(){<br>"
+	    		+"<div id='content'>//创建地图实例<br>"
+			    +"	mp = new BMap.Map('map');<br>"
+			    +"	//创建点,坐标百度经纬度<br>"
+			    +"	point=new BMap.Point(117.27, 31.86);<br>"
+			    +"	//初始化地图，设置中心点和放大级别，3-19级<br>"
+			    +"	mp.centerAndZoom(point, 11);<br>"
+			    +"	//mp.centerAndZoom('合肥市');<br></div>"
+			    +"}");
+	}
+
+	//2、启用滚轮放缩
+	function changeSize(){
+		$("#results").html("");//清空查询结果
+		
+	    mp.enableScrollWheelZoom();
+	    
+	    $("#code").html(
+	    	"启用滚轮放缩方法源码：<br>"
+	    	+"function changeSize(){<br>"
+	    	+"<div id='content'>mp.enableScrollWheelZoom();<br></div>"
+	    	+"}");
+	}
+	
+	//3、创建平移缩放控件
+	function navCtrl(){
+		$("#results").html("");//清空查询结果
+		
+	    var navCtrl = new BMap.NavigationControl({
+			anchor: BMAP_ANCHOR_BOTTOM_RIGHT, // 右下角
+			type: BMAP_NAVIGATION_CONTROL_ZOOM //仅包含缩放按钮
+		});
+		//将控件添加到地图当中
+		mp.addControl(navCtrl);	
+		
+		$("#code").html(
+			"创建平移缩放控件方法源码：<br>"	
+			+"function navCtrl(){<br>"
+			+"<div id='content'>var navCtrl = new BMap.NavigationControl({<br>"
+			+"anchor: BMAP_ANCHOR_BOTTOM_RIGHT, // 右下角<br>"
+			+"type: BMAP_NAVIGATION_CONTROL_ZOOM //仅包含缩放按钮<br>"
+			+"});<br>"
+			+"//将控件添加到地图当中<br>"
+			+"mp.addControl(navCtrl);</div>"
+	    	+"}");
+	}
+	
+	//4、全景图控件
+	function panoramaControl(){
+		$("#results").html("");//清空查询结果
+		
+		var stCtrl = new BMap.PanoramaControl();  
+		stCtrl.setOffset(new BMap.Size(20, 20)); 
+		//将控件添加到地图当中
+		mp.addControl(stCtrl);
+		
+		$("#code").html(
+			"创建全景图控件方法源码：<br>"	
+			+"function panoramaControl(){<br>"
+			+"<div id='content'>var stCtrl = new BMap.PanoramaControl(); <br>" 
+			+"stCtrl.setOffset(new BMap.Size(20, 20));<br>" 
+			+"//将控件添加到地图当中<br>"
+			+"mp.addControl(stCtrl);</div>"
+	    	+"}");
+	}
+	
+	//5、创建标注
+	function marker(){
+		$("#results").html("");//清空查询结果
+		
+	    var marker=new BMap.Marker(point);
+	    marker.addEventListener("click", function(e){  //e:事件对象或者用this
+	    // 创建信息窗口对象
+		var infoWindow = new BMap.InfoWindow("当前位置：" + e.point.lng + ", " + e.point.lat, {    
+			 width : 250,     // 信息窗口宽度    
+			 height: 100,     // 信息窗口高度    
+			 title : "Hello"  // 信息窗口标题   
+		});
+		// 打开信息窗口
+		mp.openInfoWindow(infoWindow, point);
+		});
+	   //将标注添加到地图中
+	   mp.addOverlay(marker);
+	   
+	   $("#code").html(
+		   "创建标注方法源码：<br>"	
+			+"function marker(){<br>"
+			+"<div id='content'>var marker=new BMap.Marker(point);<br>" 
+		    +'marker.addEventListener("click", function(e){  //e:事件对象或者用this<br>' 
+		    +'// 创建信息窗口对象<br>'
+			+'var infoWindow = new BMap.InfoWindow("当前位置：" + e.point.lng + ", " + e.point.lat, {  <br>'   
+			+"	 width : 250,     // 信息窗口宽度    <br>" 
+			+"	 height: 100,     // 信息窗口高度    <br>" 
+			+'	 title : "Hello"  // 信息窗口标题   <br>' 
+			+"});<br>" 
+			+"// 打开信息窗口<br>" 
+			+"mp.openInfoWindow(infoWindow, point);<br>" 
+			+"});<br>" 
+			+"//将标注添加到地图中<br>" 
+			+"mp.addOverlay(marker);</div>"
+	    	+"}");
+	}
+	
+	//6、创建折线
+	function polyline(){
+		$("#results").html("");//清空查询结果
+		
+	    var polyline = new BMap.Polyline([    
+		    new BMap.Point(117.27, 31.86),    
+		    new BMap.Point(117.27, 31.78)    
+		  ],    
+		  {strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5}    
+		 );
+	     //将折线添加到地图中
+		 mp.addOverlay(polyline);
+	     
+		 $("#code").html(
+			 "创建折线方法源码：<br>"	
+			+"function polyline(){<br>"
+			+'<div id="content">var polyline = new BMap.Polyline([  <br>'  
+           	 +'	    new BMap.Point(117.27, 31.86), <br>'   
+           	 +'	    new BMap.Point(117.27, 31.78) <br>'   
+           	 +'	  ],    <br>'
+           	 +'	  {strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5}<br>'    
+           	 +'	 );<br>'
+           	 +'//将折线添加到地图中<br>'
+           	 +'mp.addOverlay(polyline);</div>'
+ 	    	+"}");
+	}
+	
+	//7、创建交通流量图层实例
+	function traffic(){
+		$("#results").html("");//清空查询结果
+		
+		var traffic = new BMap.TrafficLayer();
+		mp.addTileLayer(traffic);
+		
+		$("#code").html(
+			'交通流量图层方法源码：<br>'
+			+'function traffic(){<br>'
+			+'<div id="content">var traffic = new BMap.TrafficLayer();<br>'  
+			+'mp.addTileLayer(traffic);</div>'
+ 	    	+'}');
+	}
+	
+	//8、周边搜索
+	function localSearch(){
+		$("#results").html("");//清空查询结果
+		
+		var local = new BMap.LocalSearch(mp, {      
+ 		renderOptions:{map: mp}  //设置展现结果的地图实例
+		});
+		local.search("合肥站");
+		
+		$("#code").html(
+				'周边搜索方法源码：<br>'
+				+'function localSearch(){<br>'
+				+'<div id="content">var local = new BMap.LocalSearch(mp, { <br>'     
+		 		+'renderOptions:{map: mp}  //设置展现结果的地图实例    <br>'
+				+'});<br>'
+				+'local.search("合肥站");</div>'
+	 	    	+'}');
+	}
+	
+	//9、公交导航
+	function transitRoute(){
+		$("#results").html("");//清空查询结果
+		
+		var transit = new BMap.TransitRoute(mp, {    
+		renderOptions: {//设置结果呈现方式
+			map: mp, //显示位置在mp中
+			panel: "results",//指定结果列表的HTML容器id
+			autoViewport: true//自动调整地图视野
+			}    
+		});
+		transit.search("合肥站", "安徽医科大学");
+		
+		$("#code").html(
+				'公交导航方法源码：<br>'
+				+'function transitRoute(){<br>'
+				+'<div id="content">'
+				+'var transit = new BMap.TransitRoute(mp, {  <br>'   
+				+'renderOptions: {//设置结果呈现方式<br>'
+				+'	map: mp, //显示位置在mp中<br>'
+				+'	panel: "results",//指定结果列表的HTML容器id<br>'
+				+'	autoViewport: true//自动调整地图视野}    <br>' 
+				+'});     <br>'
+				+'transit.search("合肥站", "安徽医科大学");</div>'
+	 	    	+'}');
+	}
+	
+	//10、驾车导航
+	function drivingRoute(){
+		$("#results").html("");//清空查询结果
+		
+		var driving = new BMap.DrivingRoute(mp, {    
+		 renderOptions: {    
+		   map   : mp,
+		   panel : "results",
+		   autoViewport: true
+		 }    
+		});
+		driving.search("合肥站", "合肥市体育馆");
+		
+		$("#code").html(
+			'驾车导航方法源码：<br>'
+			+'function drivingRoute(){<br>'
+			+'<div id="content">var driving = new BMap.DrivingRoute(mp, {<br>'    
+			+'	 renderOptions: {    <br>'
+			+'	   map   : mp,     <br>'
+			+'	   panel : "results",    <br>'
+			+'	   autoViewport: true    <br>'
+			+'	 }    <br>'
+			+'	});    <br>'
+			+'driving.search("合肥站", "合肥市体育馆");</div>'
+ 	    	+'}');
+	}
+	
+	//11、添加班车线路坐标
+	function addBusSite(){
+		$("#results").html("");//清空查询结果
+		
+		$("#code").html(
+		'所属线路：<input type="text" name="lineName" id="lineName"> <br>'
+		+'是否是停靠站：是<input type="radio" name="isSite" value="1" onclick="isSite(1)">'
+		+'否<input type="radio" name="isSite" value="0"  onclick="isSite(0)"> <br>'
+		+'<div id="isShow">站点名称：<input type="text" name="name" id="name"> <br>'
+		+'上班经过时间<input type="text" name="workStart" id="workStart"> <br>'
+		+'下班经过时间<input type="text" name="workDown" id="workDown"> <br></div>'
+		+'经度：<input type="text" name="longitude" id="longitude"> <br>'
+		+'纬度：<input type="text" name="latitude" id="latitude"> <br>'
+		+'编号：<input type="text" name="number" id="number"> <br>'
+		+'<input type="button" value="保存" onclick="saveSite()">');
+		
+		$("#isShow").hide();
+	}
+	//显示或隐藏部分选项
+	function isSite(flag){
+		if(flag == 1){
+			$("#isShow").show();
+		}else{
+			$("#isShow").hide();
+		}
+	}
+	//保存站点信息
+	function saveSite(){
+		var param={
+				"lineName":$("#lineName").val(),
+				"isSite":$("input[name=isSite]:checked").val(),
+				"name":$("#name").val(),
+				"workStart":$("#workStart").val(),
+				"workDown":$("#workDown").val(),
+				"longitude":$("#longitude").val(),
+				"latitude":$("#latitude").val(),
+				"number":$("#number").val()
+		};
+		$.post("saveSite",param,function(data,status){
+			if(status == "success"){
+				addBusSite();
+			}
+		});
+	}
+	
+	//12、查看班车1号线
+	function queryBusLine(){
+		$("#results").html("");//清空查询结果
+		
+		$.post("queryBusLine",{lineName:1},function(data,status){
+			if(status  == "success"){
+				//1、显示站点数据到表格
+				var content='<table><tr><th>线路名称</th><th>编号</th><th>经度</th><th>纬度</th>'
+				+'<th>是否是停靠站</th><th>站点名称</th><th>上班经过时间</th><th>下班经过时间</th></tr>';
+				for(var i=0;i<data.length;i++){
+					content +='<tr><td>'+data[i].lineName+'号线</td><td>'+data[i].number+'</td><td>'
+					+data[i].longitude+'</td><td>'+data[i].latitude+'</td><td>'
+					+data[i].isSite+'</td><td>'+data[i].name+'</td><td>'
+					+data[i].workStart+'</td><td>'+data[i].workDown+'</td></tr>';
+				}
+				content +='</table>';
+				$("#code").html(content);
+				
+				//2、地图打点和连线
+				showLine(data);
+			}
+		});
+	}
+	//地图打点和连线
+	function showLine(data){
+		//1、获取点数组，用于连线
+		var pointArr=[];
+		for(var i=0;i<data.length;i++){
+			var busSite=data[i];
+			var point = new BMap.Point(busSite.longitude, busSite.latitude);
+			pointArr.push(point);
+			
+			//2、如果是停靠站，创建标注，绑定单击事件
+			 if(busSite.isSite == 1){
+				//自定义标注的图标
+				var myIcon = new BMap.Icon("resources/img/station-icon.png", new BMap.Size(14, 14));
+				var marker = new BMap.Marker(point, {icon: myIcon});
+				mp.addOverlay(marker);
+				
+				/*marker.addEventListener("click", function(){
+				    // 创建信息窗口对象
+				    var content="当前站点："+busSite.name
+				    	+"<br>上班经过时间："+busSite.workStart
+				    	+"<br>下班经过时间："+busSite.workDown;
+					var infoWindow = new BMap.InfoWindow(content , {    
+						 width : 250,     // 信息窗口宽度
+						 height: 100,     // 信息窗口高度
+						 title : busSite.lineName+"号线"  // 信息窗口标题
+					});
+					// 打开信息窗口
+					mp.openInfoWindow(infoWindow, point);
+				}); */
+				
+				//(function(site,p){})(busSite,point);
+				
+				//闭包：当外部函数调用完毕后,这些变量在内存不会被释放,因为闭包需要它们
+				 (function(site,p){
+					marker.addEventListener("click", function(){
+					    // 创建信息窗口对象
+					    var content="当前站点："+site.name
+					    	+"<br>上班经过时间："+site.workStart
+					    	+"<br>下班经过时间："+site.workDown;
+						var infoWindow = new BMap.InfoWindow(content , {    
+							 width : 250,     // 信息窗口宽度
+							 height: 100,     // 信息窗口高度
+							 title : site.lineName+"号线"  // 信息窗口标题
+						});
+						// 打开信息窗口
+						mp.openInfoWindow(infoWindow, p);
+					});
+				})(busSite,point); 
+				
+			}
+		}
+		//连线
+		var polygon = new BMap.Polyline(pointArr, {strokeColor: "#5266ff",strokeWeight: 3});
+		mp.addOverlay(polygon);
+		// 调整地图层级，使所有点都聚合在可视区域中
+		mp.setViewport(pointArr);
+	}
+	</script>
+</html>

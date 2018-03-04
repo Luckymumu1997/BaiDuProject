@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.BussiteDao">
+	<insert id="addBusSite" parameterType="Bussite">
+		insert into bussite (lineName,isSite,name,workStart,workDown,longitude,latitude,number)
+		 values(#{lineName},#{isSite},#{name},#{workStart},#{workDown},#{longitude},#{latitude},#{number})
+	</insert>
+	
+	<select id="queryBusLine"  parameterType="int" resultMap="busSiteMap">
+		select id,lineName,isSite,name,workStart,workDown,longitude,latitude,number
+		 from bussite  where lineName=#{lineName} order by number
+	</select>
+	<resultMap id="busSiteMap" type="Bussite">
+		<id property="id" column="id"/>
+		<result property="lineName" column="lineName" />
+		<result property="isSite" column="isSite" />
+		<result property="name" column="name" />
+		<result property="workStart" column="workStart" />
+		<result property="workDown" column="workDown" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="number" column="number" />
+	</resultMap>
+	
+</mapper>
